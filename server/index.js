@@ -1,35 +1,21 @@
-const axios = require("axios") 
+const express = require("express")
+const bodyParser = require("body-parser")
+const cors = require("cors")
+const { searchTweets } = require("./src/controllers/tweets")
 
-const twitterBearerToken = process.env.TWITTER_APP_BEARER_TOKEN
+const app = express()
+app.use(bodyParser.json())
+app.use(cors())
 
-const recentSearchUrl = "https://api.twitter.com/2/tweets/search/recent"
-
-const queryParams = {
-	query: "python -is:retweet lang:en"
-}
-
-const searchTweets = async () => {
-	const res = await axios.get(recentSearchUrl, {
-		params: queryParams,
-		headers: {
-			"Authorization": `Bearer ${twitterBearerToken}`
-		}
-	})
-
-	if (res.status === 200) {
-		return res.data
-	} else {
-		throw new Error("Unsuccessful request")
-	}
-}
-
-(async () => {
+app.get("/tweets", async (req, res) => {
 	try {
-		const response = await searchTweets()
-		console.log(response)
+		const tweets = await searchTweets(req.query.searchTerm)
+		res.status(200).send({ data: tweets })
 	} catch(e) {
-		console.log(e)
-		process.exit(-1)
+		res.status(500).send({ message: "Internal Server Error" })
 	}
-	process.exit()
-})()
+})
+
+app.listen(4000, () => {
+	console.log("Listening on 4000")
+})
