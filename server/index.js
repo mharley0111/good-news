@@ -5,12 +5,15 @@ const { searchTweets } = require("./src/controllers/tweets")
 
 const app = express()
 app.use(bodyParser.json())
-app.use(cors())
+app.use(cors({
+	origin: "http://localhost:3000",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE"
+}))
 
 app.get("/tweets", async (req, res) => {
 	try {
-		const tweets = await searchTweets(req.query.searchTerm)
-		res.status(200).send({ data: tweets })
+		const response = await searchTweets(req.query.searchTerm)
+		res.status(200).send(response.data)
 	} catch(e) {
 		res.status(500).send({ message: "Internal Server Error" })
 	}
