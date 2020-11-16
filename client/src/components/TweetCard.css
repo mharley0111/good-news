@@ -1,0 +1,5 @@
+.tweet-card {
+	display: flex !important;
+	align-items: center !important;
+	cursor: pointer;
+}
